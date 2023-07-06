@@ -1,22 +1,6 @@
-require("dotenv").config()
-const express = require("express")
-const app = express()
-const jwt = require("jsonwebtoken")
-const port = process.env.VALIDATE_SERVER_PORT  //We will run this server on a different port i.e. port 5000
+import { verify } from "jsonwebtoken";
 
-app.use(express.json())
-
-app.listen(port, () => {
-    console.log(`Validation server running on ${port}...`)
-})
-
-
-app.get("/posts", validateToken, (req, res) => {
-    console.log("Token is valid")
-    res.send(`${req.userObject.user} successfully accessed post`)
-})
-
-function validateToken(req, res, next) {
+export async function validateToken(req, res, next) {
     //the request header contains the token "Bearer <token>", split the string and use the second value in the split array.
     //FIXME will crash if "Bearer <token>" is not present in the headers section of the API request
     const authHeader = req.headers["authorization"]
@@ -26,7 +10,7 @@ function validateToken(req, res, next) {
         res.sendStatus(400).send("Token not present")
     } 
     else {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decodedUser) => {
+        verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decodedUser) => {
             if (err) {
                 res.status(403).send("Token invalid")
             }

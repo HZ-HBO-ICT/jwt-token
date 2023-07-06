@@ -1,13 +1,11 @@
-//this will allow us to pull params from .env file
-require("dotenv").config()
+import express from 'express';
+import { hash, compare } from 'bcrypt'               // used to hash the submitted password
+import pkg from 'jsonwebtoken';                      // import sign from 'jsonwebtoken' does not work
+const { sign } = pkg;
+//import { TODO } from '../middleware/middleware.js';
 
-//This middleware will allow us to pull req.body.<params>
-const express = require('express')
-const app = express()
-const port = process.env.TOKEN_SERVER_PORT     //get the port number from .env file
-const bcrypt = require('bcrypt')               // used to hash the submitted password
-const jwt = require("jsonwebtoken")            // why require??
 let refreshTokens = []                         // list of refresh tokens
+
 const userList = [                             // in process list of users, will be destroyed on restart (should use database to persist)
 {
     "user": "Geertje",
@@ -18,17 +16,13 @@ const userList = [                             // in process list of users, will
     "password": "$2b$10$w8a0/UdUaX31Z/OSV/sCO.AgJ.ncLik/TdgXcTgsyUdEtaSbPoqua"
 }] 
 
-app.use(express.json())
-
-app.listen(port, () => {
-    console.log(`Authorization Server running on ${port}...`)
-})
+const router = express.Router();
 
 // REGISTER A USER 
 // FIXME, no check on empty fields AND/OR existing user
-app.post("/user", async (req, res) => {          
+router.post("/user", async (req, res) => {          
     const user = req.body.name
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const hashedPassword = await hash(req.body.password, 10)
     userList.push ({user: user, password: hashedPassword})
     res.status(201).send(userList)                                      // check 201
     console.log(userList)
@@ -36,7 +30,7 @@ app.post("/user", async (req, res) => {
 
 //AUTHENTICATE LOGIN AND RETURN JWT TOKEN
 //FIXME, return text is security risk
-app.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     //check to see if the user exists in the list of registered users, if user does not exist, send a 404 response (check 404)
     const user = userList.find((ul) => ul.user == req.body.name)
     if (user == null) {
@@ -45,7 +39,7 @@ app.post("/login", async (req, res) => {
     }
     else {
 
-        if (await bcrypt.compare(req.body.password, user.password)) {
+        if (await compare(req.body.password, user.password)) {
             const accessToken = generateAccessToken({ user: req.body.name })
             const refreshToken = generateRefreshToken({ user: req.body.name })
             res.json({ accessToken: accessToken, refreshToken: refreshToken })
@@ -59,7 +53,7 @@ app.post("/login", async (req, res) => {
 
 //REFRESH TOKEN API
 //FIXME there is no check on expiration time of the refreshToken?
-app.post("/refreshToken", (req, res) => {
+router.post("/refreshToken", (req, res) => {
     if (!refreshTokens.includes(req.body.token)) {                      // FIXME do not use negative test
         res.status(400).send("Refresh Token Invalid")
     }
@@ -75,7 +69,7 @@ app.post("/refreshToken", (req, res) => {
 })
 
 //LOGOUT API
-app.delete("/logout", (req, res) => {
+router.delete("/logout", (req, res) => {
 
     //remove the old refreshToken from the refreshTokens list  
     console.log(refreshTokens)
@@ -86,12 +80,14 @@ app.delete("/logout", (req, res) => {
 
 // accessTokens
 function generateAccessToken(user) { 
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" })
+    return sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" })
 }
 
 // refreshTokens
 function generateRefreshToken(user) {
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "20m" })
+    const refreshToken = sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "20m" })
     refreshTokens.push(refreshToken)
     return refreshToken
 }
+
+export default router;
