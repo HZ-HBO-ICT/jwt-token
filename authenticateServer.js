@@ -10,6 +10,6 @@ import indexRouter from './routes/authenticate.js';
 app.use(express.json());
 app.use('/', indexRouter);
 app.listen(port, () => {
-    console.log(`Authorization Server running on ${port}...`)
+    console.log(`Authenticate Server running on ${port}...`)
 })
 
