@@ -15,6 +15,7 @@ export async function validateToken(req, res, next) {
                 res.status(403).send("Token invalid")
             }
             else {
+                console.log("Token is valid")
                 console.log(decodedUser)
                 req.userObject = decodedUser
                 next() //proceed to the next action in the calling function
