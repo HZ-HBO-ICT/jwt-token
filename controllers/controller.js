@@ -13,7 +13,6 @@ const userList = [                             // in process list of users, will
     "password": "$2b$10$w8a0/UdUaX31Z/OSV/sCO.AgJ.ncLik/TdgXcTgsyUdEtaSbPoqua"
 }] 
 
-
 export async function responseExample(req, res) {
     res.send(`${req.userObject.user} successfully accessed post`)
 }
