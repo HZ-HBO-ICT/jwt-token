@@ -2,6 +2,9 @@
 
 This project demonstrates the implementation of JSON Web Tokens (JWT) for authentication and authorization in a web application.
 
+It is an implementation of the following article:
+https://medium.com/@prashantramnyc/authenticate-rest-apis-in-node-js-using-jwt-json-web-tokens-f0e97669aad3
+
 ## Features
 
 - User authentication with JWT
@@ -31,6 +34,8 @@ This project demonstrates the implementation of JSON Web Tokens (JWT) for authen
     npm run authenticateServer
     ```
 2. Access the application at `http://localhost:4000`.
+3. POST localhost:4000/user ({"name":"name","password":"password"} in Body )
+4. POST localhost:4000/login ({"name":"name","password":"password"} in Body )
 
 
 
