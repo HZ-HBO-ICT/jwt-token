@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "authenticateServer": "nodemon authenticateServer.js"
+    "authenticateServer": "nodemon authenticateServer.js",
+    "validateServer": "nodemon validateServer.js"
   },
   "keywords": [],
   "author": "",

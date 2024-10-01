@@ -6,11 +6,11 @@ let refreshTokens = []                         // list of refresh tokens
 const userList = [                             // in process list of users, will be destroyed on restart (should use database to persist)
 {
     "user": "Geertje",
-    "password": "$2b$10$PHeK4oL9d6EKkWAwL13dKuv7.VY/nnlo/QKFzU3873oML5RUXfKoS"
+    "password": "$2b$10$FkR/POy8yBdatZzbVk6YBOyVlqem0wESFKBVU2Vx/WCGa0ctzmMsy"
 },
 {
     "user": "Jos",
-    "password": "$2b$10$w8a0/UdUaX31Z/OSV/sCO.AgJ.ncLik/TdgXcTgsyUdEtaSbPoqua"
+    "password": "$2b$10$lWOejQYPBoWZnMhD6fccZu8SetefzgRkxal811Ftj.QbsAMysvp2e"
 }] 
 
 export async function responseExample(req, res) {
@@ -22,6 +22,7 @@ export async function responseExample(req, res) {
 // FIXME, no check on empty fields AND/OR existing user
 export async function addUser(req, res) { 
     const user = req.body.name
+    console.log(user)
     const hashedPassword = await hash(req.body.password, 10)
     userList.push ({user: user, password: hashedPassword})
     res.status(201).send(userList)                                      // check 201
@@ -31,20 +32,20 @@ export async function addUser(req, res) {
 //AUTHENTICATE LOGIN AND RETURN JWT TOKEN
 //FIXME, return text is security risk
 export async function loginUser(req, res) {
-    //check to see if the user exists in the list of registered users, if user does not exist, send a 404 response (check 404)
+    //check to see if the user exists in the list of registered users, 
+    //if user does not exist, send a 404 response (check 404)
     const user = userList.find((ul) => ul.user == req.body.name)
     if (user == null) {
-        res.status(404).send("User does not exist!")                    // check 404, also security risk, why
+        res.status(404).send("User does not exist!")                           // check 404, also security risk, why
     }
     else {
-
         if (await compare(req.body.password, user.password)) {
             const accessToken = generateAccessToken({ user: req.body.name })
             const refreshToken = generateRefreshToken({ user: req.body.name })
             res.json({ accessToken: accessToken, refreshToken: refreshToken })
         }
         else {
-            res.status(401).send("Password Incorrect!")                 // (check 401), also security risk, why
+            res.status(401).send("Password Incorrect!")                        // (check 401), also security risk, why
         }
     }
 }
@@ -52,7 +53,7 @@ export async function loginUser(req, res) {
 //REFRESH TOKEN API
 //FIXME there is no check on expiration time of the refreshToken?
 export async function refreshToken(req, res) {
-    if (!refreshTokens.includes(req.body.token)) {                      // FIXME do not use negative test
+    if (!refreshTokens.includes(req.body.token)) {                            // FIXME do not use negative test
         res.status(400).send("Refresh Token Invalid")
     }
     else {

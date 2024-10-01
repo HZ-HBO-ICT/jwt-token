@@ -5,6 +5,12 @@ This project demonstrates the implementation of JSON Web Tokens (JWT) for authen
 It is an implementation of the following article:
 https://medium.com/@prashantramnyc/authenticate-rest-apis-in-node-js-using-jwt-json-web-tokens-f0e97669aad3
 
+To convert Epoch and Unix Timestap:
+https://www.epochconverter.com/
+
+To inspect JWT-tokes:
+https://jwt.io/
+
 ## Features
 
 - User authentication with JWT
@@ -27,13 +33,34 @@ https://medium.com/@prashantramnyc/authenticate-rest-apis-in-node-js-using-jwt-j
     npm install
     ```
 
-## Usage
+## Usage, main flow
 
 1. Start the authentication server: 
     ```sh
     npm run authenticateServer
     ```
-2. Access the application at `http://localhost:4000`.
+2. Start the validation server:
+    ```sh
+    npm run validateServer
+    ```
+3. Add users using POST localhost:4000/user {"name" : "name","password" : "password"}
+4. Login using POST localhost:4000/login {"name" : "name","password" : "password"}
+5. Access using GET localhost:5000/posts (until accesstoken expires) add accesstoken to Authorization / type OAuth 2.0
+6. Refresh token using POST localhost:4000/refreshToken {"name" : "name","token" : "refreshtoken"}
+5. Access using GET localhost:5000/posts (until access token expires) add accesstoken to Authorization / type OAuth 2.0
+6. Logout using DELETE localhost:4000/logout {"token" : "refreshtoken"}
+
+
+
+
+
+
+
+
+
+
+
+
 3. POST localhost:4000/user ({"name":"name","password":"password"} in Body )
 4. POST localhost:4000/login ({"name":"name","password":"password"} in Body )
 

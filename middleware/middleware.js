@@ -1,7 +1,7 @@
 import { verify } from "jsonwebtoken";
 
 export async function validateToken(req, res, next) {
-    //the request header contains the token "Bearer <token>", split the string and use the second value in the split array.
+    //the request header contains the token "Bearer <token>", split the string and use the second value.
     //FIXME will crash if "Bearer <token>" is not present in the headers section of the API request
     const authHeader = req.headers["authorization"]
     const token = authHeader.split(" ")[1]                              
